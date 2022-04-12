@@ -1,4 +1,6 @@
-CREATE DATABASE IF NOT EXISTS gb_mysql_curs;
+DROP DATABASE IF EXISTS gb_mysql_curs;
+
+CREATE DATABASE gb_mysql_curs;
 USE gb_mysql_curs;
 
 CREATE TABLE document_types (
@@ -35,8 +37,8 @@ CREATE TABLE connected_adresses (
 	house_id BIGINT UNSIGNED NOT NULL,
 	flat_no VARCHAR(10),
 	UNIQUE KEY (house_id, flat_no), 
-	FOREIGN KEY (house_id) REFERENCES houses(id)
-)
+	FOREIGN KEY (house_id) REFERENCES houses(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- Договора
 CREATE TABLE accounts (
@@ -44,16 +46,14 @@ CREATE TABLE accounts (
 	contract VARCHAR(30) UNIQUE NOT NULL, -- номер договора
 	abonent_id BIGINT UNSIGNED NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	contract_address_id INT UNSIGNED NOT NULL, -- адрес подключения по договору
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE NOW(),
+	contract_address_id INT UNSIGNED, -- адрес подключения по договору
 	money_balance DECIMAL,
 	current_tariff_id BIGINT UNSIGNED,
-	next_tariff_id BIGINT UNSIGNED,
 	is_active BIT DEFAULT 1,
-	FOREIGN KEY (abonent_id) REFERENCES abonents(id),
-	FOREIGN KEY (contract_address_id) REFERENCES connected_addresses(id),
-	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id),
-	FOREIGN KEY (next_tariff_id) REFERENCES tariffs(id)
+	FOREIGN KEY (abonent_id) REFERENCES abonents(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (contract_address_id) REFERENCES connected_addresses(id) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 );
 
 CREATE TABLE tariffs (
@@ -64,7 +64,7 @@ CREATE TABLE tariffs (
 -- periods
 CREATE TABLE periods (
 	id SERIAL PRIMARY KEY,
-	len INT UNSIGNED NOT NULL -- продолжительность рассчетного мериода в секундах
+	len INT UNSIGNED NOT NULL -- продолжительность рассчетного периода в секундах
 )
 
 -- список услуг
@@ -73,25 +73,46 @@ CREATE TABLE services (
 	s_name VARCHAR(100), -- наименование услуги
 	price DECIMAL, 
 	period_id BIGINT UNSIGNED,
-	FOREIGN KEY (period_id) REFERENCES periods(id)
+	FOREIGN KEY (period_id) REFERENCES periods(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Услуги по тарифам
+-- Услуги, подключенные к тарифам
 CREATE TABLE tariffs_services (
 	tariff_id BIGINT UNSIGNED NOT NULL,
 	service_id BIGINT UNSIGNED NOT NULL,
 	PRIMARY KEY(tariff_id, service_id),
-	FOREIGN KEY (tariff_id) REFERENCES tariffs(id),
-	FOREIGN KEY (service_id) REFERENCES services(id)
+	FOREIGN KEY (tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Списки подключенных услуг к аккаунтам
+-- Услуги, подключенные вне тарифа
 CREATE TABLE accounts_services (
 	account_id BIGINT UNSIGNED NOT NULL,
 	service_id BIGINT UNSIGNED NOT NULL,
 	PRIMARY KEY(account_id, service_id),
-	FOREIGN KEY (account_id) REFERENCES accounts(id),
-	FOREIGN KEY (service_id) REFERENCES services(id)
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT ON UPDATE CASCADE 
 );
 
+CREATE TABLE payment_agents (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100)
+);
 
+CREATE TABLE account_payments (
+	id SERIAL PRIMARY KEY,
+	account_id BIGINT UNSIGNED NOT NULL,
+	value DECIMAL NOT NULL DEFAULT 0,
+	agent_id BIGINT UNSIGNED,
+	pay_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (agent_id) REFERENCES payment_agents(id) ON DELETE RESTRICT ON UPDATE CASCADE 	
+);
+
+-- справочник IP адреса 
+CREATE TABLE ip_adresses (
+	ip_address INT UNSIGNED PRIMARY KEY,
+	account_id BIGINT UNSIGNED DEFAULT NULL,
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- 
