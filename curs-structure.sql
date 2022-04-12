@@ -12,7 +12,7 @@ CREATE TABLE abonents (
 	id SERIAL PRIMARY KEY,
 	firstname VARCHAR(100) NOT NULL,
 	midname VARCHAR(100) DEFAULT NULL,
-	lastname VARCHAR(100) NOt NULL,
+	lastname VARCHAR(100) NOT NULL,
 	document_type_id TINYINT UNSIGNED NOT NULL,
 	document_number VARCHAR(30) UNIQUE,
 	document_address VARCHAR(200),
@@ -28,16 +28,21 @@ CREATE TABLE houses (
 	street VARCHAR(200) NOT NULL,
 	house_num INT UNSIGNED DEFAULT NULL,
 	house_korpus VARCHAR(10) DEFAULT NULL,
-	house_litera VARCHAR(10) DEFAULT NULL,
+	house_litera VARCHAR(10) DEFAULT NULL
 );
 
 -- Подключенные квартиры в домах
-CREATE TABLE connected_adresses (
+CREATE TABLE connected_addresses (
 	id SERIAL PRIMARY KEY,
 	house_id BIGINT UNSIGNED NOT NULL,
 	flat_no VARCHAR(10),
 	UNIQUE KEY (house_id, flat_no), 
 	FOREIGN KEY (house_id) REFERENCES houses(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE tariffs (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(30)
 );
 
 -- Договора
@@ -47,25 +52,21 @@ CREATE TABLE accounts (
 	abonent_id BIGINT UNSIGNED NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE NOW(),
-	contract_address_id INT UNSIGNED, -- адрес подключения по договору
+	contract_address_id BIGINT UNSIGNED, -- адрес подключения по договору
 	money_balance DECIMAL,
 	current_tariff_id BIGINT UNSIGNED,
 	is_active BIT DEFAULT 1,
 	FOREIGN KEY (abonent_id) REFERENCES abonents(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (contract_address_id) REFERENCES connected_addresses(id) ON DELETE SET NULL ON UPDATE CASCADE,
-	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE tariffs (
-	id SERIAL PRIMARY KEY,
-	name VARCHAR(30)
-);
 
 -- periods
 CREATE TABLE periods (
 	id SERIAL PRIMARY KEY,
 	len INT UNSIGNED NOT NULL -- продолжительность рассчетного периода в секундах
-)
+);
 
 -- список услуг
 CREATE TABLE services (
@@ -108,18 +109,19 @@ CREATE TABLE account_payments (
 	FOREIGN KEY (agent_id) REFERENCES payment_agents(id) ON DELETE RESTRICT ON UPDATE CASCADE 	
 );
 
+CREATE TABLE registered_macs (
+	mac_address CHAR(17) PRIMARY KEY -- aa:bb:cc:dd:ee:ff
+);
+
 -- справочник IP адреса 
 CREATE TABLE ip_adresses (
 	ip_address INT UNSIGNED PRIMARY KEY,
 	account_id BIGINT UNSIGNED DEFAULT NULL,
 	mac_address CHAR(17) UNIQUE DEFAULT NULL, 
-	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
-	FOREIGN KEY (mac_address) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (mac_address) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE registered_macs (
-	mac_address CHAR(17) PRIMARY KEY, -- aa:bb:cc:dd:ee:ff
-)
 
 
 -- 
