@@ -110,16 +110,18 @@ CREATE TABLE account_payments (
 );
 
 CREATE TABLE registered_macs (
-	mac_address CHAR(17) PRIMARY KEY -- aa:bb:cc:dd:ee:ff
+	mac_address CHAR(17) PRIMARY KEY, -- aa:bb:cc:dd:ee:ff
+	account_id BIGINT UNSIGNED DEFAULT NULL,
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- справочник IP адреса 
 CREATE TABLE ip_adresses (
 	ip_address INT UNSIGNED PRIMARY KEY,
 	account_id BIGINT UNSIGNED DEFAULT NULL,
-	mac_address CHAR(17) UNIQUE DEFAULT NULL, 
-	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE,
-	FOREIGN KEY (mac_address) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE
+	binded_mac CHAR(17) DEFAULT NULL,
+	FOREIGN KEY (binded_mac) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 
