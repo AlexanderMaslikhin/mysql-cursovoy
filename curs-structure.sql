@@ -13,6 +13,7 @@ CREATE TABLE abonents (
 	firstname VARCHAR(100) NOT NULL,
 	midname VARCHAR(100) DEFAULT NULL,
 	lastname VARCHAR(100) NOT NULL,
+	gender ENUM('f', 'm'),
 	document_type_id TINYINT UNSIGNED NOT NULL,
 	document_number VARCHAR(30) UNIQUE,
 	document_address VARCHAR(200),
