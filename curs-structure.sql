@@ -43,7 +43,8 @@ CREATE TABLE connected_addresses (
 
 CREATE TABLE tariffs (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(30)
+	name VARCHAR(30),
+	price DECIMAL
 );
 
 -- Договора
