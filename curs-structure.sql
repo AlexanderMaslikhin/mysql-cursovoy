@@ -50,6 +50,8 @@ CREATE TABLE accounts (
 	id SERIAL PRIMARY KEY, -- Номер лицевого счета
 	contract VARCHAR(30) UNIQUE NOT NULL, -- номер договора
 	abonent_id BIGINT UNSIGNED NOT NULL,
+	login VARCHAR(50) UNIQUE NOT NULL,
+	pass_hash VARCHAR(255) NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE NOW(),
 	contract_address_id BIGINT UNSIGNED, -- адрес подключения по договору
