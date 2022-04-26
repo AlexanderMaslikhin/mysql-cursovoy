@@ -69,7 +69,7 @@ CREATE TABLE accounts (
 -- periods
 CREATE TABLE periods (
 	id SERIAL PRIMARY KEY,
-	len INT UNSIGNED NOT NULL -- продолжительность рассчетного периода в секундах
+	len INT UNSIGNED NOT NULL -- продолжительность рассчетного периода (1 DAY, 1 MONTH, 1 WEEK and so on)
 );
 
 -- список услуг
@@ -110,6 +110,7 @@ CREATE TABLE account_payments (
 	value DECIMAL NOT NULL DEFAULT 0,
 	agent_id BIGINT UNSIGNED,
 	pay_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (account_id) REFERENCES accounts(id),
 	FOREIGN KEY (agent_id) REFERENCES payment_agents(id) ON DELETE RESTRICT ON UPDATE CASCADE 	
 );
 
@@ -122,10 +123,8 @@ CREATE TABLE registered_macs (
 -- справочник IP адреса 
 CREATE TABLE ip_adresses (
 	ip_address INT UNSIGNED PRIMARY KEY,
-	account_id BIGINT UNSIGNED DEFAULT NULL,
 	binded_mac CHAR(17) DEFAULT NULL,
 	FOREIGN KEY (binded_mac) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE,
-	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 
