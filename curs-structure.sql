@@ -29,7 +29,8 @@ CREATE TABLE houses (
 	street VARCHAR(200) NOT NULL,
 	house_num INT UNSIGNED DEFAULT NULL,
 	house_korpus VARCHAR(10) DEFAULT NULL,
-	house_litera VARCHAR(10) DEFAULT NULL
+	house_litera VARCHAR(10) DEFAULT NULL,
+	INDEX(street, house_num)
 );
 
 -- Подключенные квартиры в домах
@@ -59,7 +60,7 @@ CREATE TABLE accounts (
 	contract_address_id BIGINT UNSIGNED, -- адрес подключения по договору
 	money_balance DECIMAL,
 	current_tariff_id BIGINT UNSIGNED,
-	is_active BIT DEFAULT 1,
+	is_active BOOL DEFAULT 1,
 	FOREIGN KEY (abonent_id) REFERENCES abonents(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (contract_address_id) REFERENCES connected_addresses(id) ON DELETE SET NULL ON UPDATE CASCADE,
 	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -110,6 +111,8 @@ CREATE TABLE account_payments (
 	value DECIMAL NOT NULL DEFAULT 0,
 	agent_id BIGINT UNSIGNED,
 	pay_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	INDEX(account_id),
+	INDEX(agent_id),
 	FOREIGN KEY (account_id) REFERENCES accounts(id),
 	FOREIGN KEY (agent_id) REFERENCES payment_agents(id) ON DELETE RESTRICT ON UPDATE CASCADE 	
 );
@@ -124,7 +127,8 @@ CREATE TABLE registered_macs (
 CREATE TABLE ip_adresses (
 	ip_address INT UNSIGNED PRIMARY KEY,
 	binded_mac CHAR(17) DEFAULT NULL,
-	FOREIGN KEY (binded_mac) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE,
+    INDEX(binded_mac),
+	FOREIGN KEY (binded_mac) REFERENCES registered_macs(mac_address) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 
