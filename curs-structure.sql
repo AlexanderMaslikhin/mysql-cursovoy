@@ -120,6 +120,7 @@ CREATE TABLE account_payments (
 CREATE TABLE registered_macs (
 	mac_address CHAR(17) PRIMARY KEY, -- aa:bb:cc:dd:ee:ff
 	account_id BIGINT UNSIGNED DEFAULT NULL,
+    INDEX(account_id),
 	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 

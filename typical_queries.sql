@@ -18,20 +18,3 @@ JOIN payment_agents pa ON ap.agent_id = pa.id
 GROUP BY ap.agent_id
 ORDER BY total_agent
 DESC;
-
-DELIMITER //
-CREATE PROCEDURE fill_ip_adresses(start_address VARCHAR(30), ip_cnt INT)
-BEGIN
-	DECLARE start_ip INT UNSIGNED;
-	DECLARE counter INT DEFAULT 0;
-	SET start_ip = INET_ATON(start_address);
-	WHILE counter < ip_cnt DO
-		INSERT INTO ip_adresses (ip_address) VALUES (start_ip);
-		SET counter = counter + 1;
-		SET start_ip = start_ip + 1;
-	END WHILE;
-END//
-
-CALL fill_ip_adresses('192.168.0.0', 25);
-ALTER TABLE ip_adresses  DROP COLUMN account_id;
-ALTER TABLE registered_macs ADD INDEX(account_id);
