@@ -70,7 +70,8 @@ CREATE TABLE accounts (
 -- periods
 CREATE TABLE periods (
 	id SERIAL PRIMARY KEY,
-	len INT UNSIGNED NOT NULL -- продолжительность рассчетного периода (1 DAY, 1 MONTH, 1 WEEK and so on)
+    duration VARCHAR(20),
+	durations_count TINYINT UNSIGNED NOT NULL -- продолжительность рассчетного периода (1 DAY, 1 MONTH, 1 WEEK and so on)
 );
 
 -- список услуг
