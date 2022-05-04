@@ -92,13 +92,25 @@ CREATE TABLE tariffs_services (
 	FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Услуги, подключенные вне тарифа
-CREATE TABLE accounts_services (
+-- Все услуги, подключенные к абоненту ВНЕ ТАРИФА с датами создания и следующего списания
+CREATE TABLE accounts_services_write_offs (
 	account_id BIGINT UNSIGNED NOT NULL,
 	service_id BIGINT UNSIGNED NOT NULL,
+    activated_at DATE NOT NULL,
+    next_write_off_at DATE NOT NULL,
+    INDEX (next_write_off_at),
 	PRIMARY KEY(account_id, service_id),
 	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT ON UPDATE CASCADE 
+);
+
+-- Списки тарифов абонентов с датами создания и следующего списания
+CREATE TABLE tariffs_write_offs (
+	account_id BIGINT UNSIGNED NOT NULL,
+    next_write_off_at DATE NOT NULL,
+    PRIMARY KEY(account_id),
+    INDEX (next_write_off_at),
+	FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE payment_agents (
