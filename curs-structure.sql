@@ -60,11 +60,13 @@ CREATE TABLE accounts (
 	contract_address_id BIGINT UNSIGNED, -- адрес подключения по договору
 	money_balance DECIMAL,
 	current_tariff_id BIGINT UNSIGNED,
+    next_tariff_id BIGINT UNSIGNED,
 	is_active BOOL DEFAULT 1,
 	FOREIGN KEY (abonent_id) REFERENCES abonents(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (contract_address_id) REFERENCES connected_addresses(id) ON DELETE SET NULL ON UPDATE CASCADE,
-	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE
-);
+	FOREIGN KEY (current_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (next_tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT ON UPDATE CASCADE
+););
 
 
 -- periods
